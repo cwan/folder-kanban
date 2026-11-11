@@ -1,9 +1,13 @@
 name: Release
 
-# Push a tag like "v0.1.0" (must match "version" in package.json) to publish a release with the .vsix.
+# Publishes a GitHub release with the .vsix attached. Two ways to start it:
+#  - Push a tag like "v0.1.0" (must match "version" in package.json).
+#  - Run this workflow manually from the Actions tab ("Run workflow"). The tag "v<version>" is
+#    created from package.json on the selected branch.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,13 +22,21 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Check tag matches package.json version
+      - name: Determine tag
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           version="v$(node -p "require('./package.json').version")"
-          if [ "$version" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            if [ "$version" != "$GITHUB_REF_NAME" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
+              exit 1
+            fi
+          elif gh release view "$version" >/dev/null 2>&1; then
+            echo "::error::Release $version already exists. Bump the version in package.json first."
             exit 1
           fi
+          echo "TAG=$version" >> "$GITHUB_ENV"
       - run: npm run typecheck
       - run: npm test
       - run: npm run package
@@ -32,7 +44,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist-vsix/*.vsix \
-            --title "$GITHUB_REF_NAME" \
+          gh release create "$TAG" dist-vsix/*.vsix \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
             --generate-notes \
-            $([[ "$GITHUB_REF_NAME" == *-* ]] && echo --prerelease)
+            $([[ "$TAG" == *-* ]] && echo --prerelease)

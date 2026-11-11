@@ -78,11 +78,8 @@ VS Code でこのフォルダーを開いて F5 を押すと、拡張機能を�
 
 ### リリース手順
 
-1. `package.json` の `version` を更新してコミット (例: `0.2.0`)
-2. バージョンと同じタグを push
-
-   ```bash
-   git tag v0.2.0 && git push origin v0.2.0
-   ```
-
-3. GitHub Actions (`.github/workflows/release.yml`) がビルドし、Release に `.vsix` を添付します。`v0.2.0-beta.1` のように `-` を含むタグはプレリリースになります。
+1. `package.json` の `version` を更新してコミット・push (例: `0.2.0`)
+2. 次のどちらかでリリースを作成
+   - GitHub の **Actions** タブ → **Release** → **Run workflow** (タグ `v0.2.0` は自動で作成されます)
+   - またはバージョンと同じタグを push: `git tag v0.2.0 && git push origin v0.2.0`
+3. GitHub Actions (`.github/workflows/release.yml`) がビルドし、Release に `.vsix` を添付します。`v0.2.0-beta.1` のように `-` を含むバージョンはプレリリースになります。
