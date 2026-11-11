@@ -1,0 +1,245 @@
+:root {
+  --group-width: 272px;
+  --radius: 6px;
+  --gap: 10px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+}
+
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap);
+  height: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ---------------------------------------------------------------- groups */
+
+.group {
+  flex: 0 0 var(--group-width);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  box-sizing: border-box;
+  border-radius: var(--radius);
+  background: var(--vscode-sideBar-background, var(--vscode-editorWidget-background));
+  border: 1px solid var(--vscode-panel-border, transparent);
+}
+
+.group.dragging {
+  opacity: 0.35;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 6px;
+  cursor: grab;
+  user-select: none;
+}
+
+.group-header:active {
+  cursor: grabbing;
+}
+
+.group-title {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group-count {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--vscode-badge-foreground);
+  background: var(--vscode-badge-background);
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 8px;
+  overflow-y: auto;
+}
+
+.empty {
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.group-footer {
+  padding: 4px 8px 8px;
+}
+
+.group-placeholder {
+  flex: 0 0 var(--group-width);
+  box-sizing: border-box;
+  border-radius: var(--radius);
+  border: 2px dashed var(--vscode-focusBorder);
+  min-height: 80px;
+}
+
+.add-group {
+  flex: 0 0 var(--group-width);
+}
+
+.hint {
+  margin: 0 0 8px;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* ----------------------------------------------------------------- cards */
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-widget-border, var(--vscode-panel-border, transparent));
+  box-shadow: 0 1px 2px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.16));
+  cursor: pointer;
+  user-select: none;
+}
+
+.card:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.card:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.card.dragging {
+  opacity: 0.35;
+}
+
+.card-icon {
+  flex: 0 0 auto;
+  display: flex;
+  color: var(--vscode-descriptionForeground);
+}
+
+.card.folder .card-icon {
+  color: var(--vscode-symbolIcon-folderForeground, var(--vscode-descriptionForeground));
+}
+
+.card-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-ext {
+  flex: 0 0 auto;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 16px;
+  color: var(--vscode-descriptionForeground);
+  border: 1px solid var(--vscode-descriptionForeground);
+  opacity: 0.8;
+}
+
+.card-placeholder {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  border-radius: var(--radius);
+  border: 2px dashed var(--vscode-focusBorder);
+  background: var(--vscode-list-dropBackground, transparent);
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.btn {
+  font: inherit;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.btn.ghost {
+  width: 100%;
+  text-align: left;
+  color: var(--vscode-descriptionForeground);
+  background: transparent;
+}
+
+.btn.ghost:hover {
+  color: var(--vscode-foreground);
+  background: var(--vscode-toolbar-hoverBackground, var(--vscode-list-hoverBackground));
+}
+
+.add-group .btn.ghost {
+  background: var(--vscode-sideBar-background, var(--vscode-editorWidget-background));
+  padding: 10px 12px;
+}
+
+.btn.secondary {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+}
+
+.btn.secondary:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+.btn:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+/* ----------------------------------------------------------------- error */
+
+.error {
+  padding: 20px;
+}
+
+.error-title {
+  font-weight: 600;
+  color: var(--vscode-errorForeground);
+}
+
+.error-message {
+  white-space: pre-wrap;
+  font-family: var(--vscode-editor-font-family);
+}
+
+.tasks:has(.card-placeholder) .empty {
+  visibility: hidden;
+  height: 0;
+  padding: 0;
+}

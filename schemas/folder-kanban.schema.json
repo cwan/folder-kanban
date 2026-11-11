@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Folder Kanban board",
+  "type": "object",
+  "properties": {
+    "groups": {
+      "type": "array",
+      "description": "Task groups (direct sub folders of this folder) in display order.",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "description": "Folder name of the task group."
+          },
+          {
+            "type": "object",
+            "required": [
+              "folder"
+            ],
+            "properties": {
+              "folder": {
+                "type": "string",
+                "description": "Folder name of the task group."
+              },
+              "tasks": {
+                "type": "array",
+                "description": "Task (file / folder) names in display order. Unlisted entries are shown at the end.",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  }
+}

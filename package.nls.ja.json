@@ -1,0 +1,17 @@
+{
+  "description": "プロジェクト内のフォルダーとファイルで管理する Trello 風タスクボード",
+  "command.openBoard": "ボードを開く",
+  "command.refresh": "最新の情報に更新",
+  "command.addGroup": "タスクグループを追加...",
+  "command.addTask": "タスクを追加...",
+  "command.openTask": "開く",
+  "command.renameTask": "タスク名を変更...",
+  "command.deleteTask": "タスクを削除",
+  "command.revealInExplorer": "エクスプローラー ビューで表示",
+  "command.removeGroup": "グループをボードから外す",
+  "command.renameGroup": "グループのフォルダー名を変更...",
+  "command.openConfig": "ボード設定ファイルを開く",
+  "config.boardRoot": "**Folder Kanban: ボードを開く** でボードのルートとするフォルダー (ワークスペースフォルダーからの相対パス)。空の場合はワークスペースフォルダー自体。",
+  "config.newTaskExtension": "拡張子なしで作成した新規タスクファイルに付ける拡張子 (例: `.md`)。空にすると付けません。",
+  "config.exclude": "タスクグループやタスクとして表示しないフォルダー名・ファイル名。`.` で始まる名前は常に非表示。"
+}

@@ -1,0 +1,239 @@
+{
+  "name": "folder-kanban",
+  "displayName": "Folder Kanban",
+  "description": "%description%",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "kanban",
+    "task",
+    "todo",
+    "board"
+  ],
+  "main": "./dist/extension.js",
+  "l10n": "./l10n",
+  "activationEvents": [
+    "onWebviewPanel:folderKanban.board"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "folderKanban.openBoard",
+        "title": "%command.openBoard%",
+        "category": "Folder Kanban",
+        "icon": "$(project)"
+      },
+      {
+        "command": "folderKanban.refresh",
+        "title": "%command.refresh%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.addGroup",
+        "title": "%command.addGroup%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.addTask",
+        "title": "%command.addTask%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.openTask",
+        "title": "%command.openTask%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.renameTask",
+        "title": "%command.renameTask%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.deleteTask",
+        "title": "%command.deleteTask%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.revealInExplorer",
+        "title": "%command.revealInExplorer%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.removeGroup",
+        "title": "%command.removeGroup%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.renameGroup",
+        "title": "%command.renameGroup%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.openConfig",
+        "title": "%command.openConfig%",
+        "category": "Folder Kanban"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "folderKanban.refresh",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.addGroup",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.addTask",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.openTask",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.renameTask",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.deleteTask",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.revealInExplorer",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.removeGroup",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.renameGroup",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.openConfig",
+          "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "folderKanban.openBoard",
+          "when": "explorerResourceIsFolder || resourceFilename == '.folder-kanban.json'",
+          "group": "navigation@90"
+        }
+      ],
+      "webview/context": [
+        {
+          "command": "folderKanban.openTask",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'task'",
+          "group": "1_open@1"
+        },
+        {
+          "command": "folderKanban.revealInExplorer",
+          "when": "webviewId == 'folderKanban.board' && (webviewSection == 'task' || webviewSection == 'group')",
+          "group": "1_open@2"
+        },
+        {
+          "command": "folderKanban.renameTask",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'task'",
+          "group": "2_edit@1"
+        },
+        {
+          "command": "folderKanban.deleteTask",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'task'",
+          "group": "2_edit@2"
+        },
+        {
+          "command": "folderKanban.addTask",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'group'",
+          "group": "1_open@1"
+        },
+        {
+          "command": "folderKanban.renameGroup",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'group'",
+          "group": "2_edit@1"
+        },
+        {
+          "command": "folderKanban.removeGroup",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'group'",
+          "group": "2_edit@2"
+        },
+        {
+          "command": "folderKanban.addGroup",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'board'",
+          "group": "1_board@1"
+        },
+        {
+          "command": "folderKanban.openConfig",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'board'",
+          "group": "1_board@2"
+        },
+        {
+          "command": "folderKanban.refresh",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'board'",
+          "group": "1_board@3"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Folder Kanban",
+      "properties": {
+        "folderKanban.boardRoot": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "markdownDescription": "%config.boardRoot%"
+        },
+        "folderKanban.newTaskExtension": {
+          "type": "string",
+          "default": ".md",
+          "scope": "resource",
+          "markdownDescription": "%config.newTaskExtension%"
+        },
+        "folderKanban.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "node_modules"
+          ],
+          "scope": "resource",
+          "markdownDescription": "%config.exclude%"
+        }
+      }
+    },
+    "jsonValidation": [
+      {
+        "fileMatch": ".folder-kanban.json",
+        "url": "./schemas/folder-kanban.schema.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc -p . --noEmit",
+    "test": "node scripts/build.mjs --tests && node --test out/test/*.test.js",
+    "package": "node -e \"require('fs').mkdirSync('dist-vsix',{recursive:true})\" && vsce package --no-dependencies --skip-license --allow-missing-repository --no-rewrite-relative-links --out dist-vsix/",
+    "vscode:prepublish": "npm run build -- --production",
+    "e2e": "npm run build && node scripts/e2e/run.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.25.0",
+    "typescript": "~5.9.0"
+  }
+}
