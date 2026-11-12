@@ -32,6 +32,12 @@
         "icon": "$(project)"
       },
       {
+        "command": "folderKanban.refreshBoards",
+        "title": "%command.refreshBoards%",
+        "category": "Folder Kanban",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "folderKanban.refresh",
         "title": "%command.refresh%",
         "category": "Folder Kanban"
@@ -141,6 +147,10 @@
         {
           "command": "folderKanban.clearDue",
           "when": "false"
+        },
+        {
+          "command": "folderKanban.refreshBoards",
+          "when": "false"
         }
       ],
       "explorer/context": [
@@ -211,6 +221,25 @@
           "when": "webviewId == 'folderKanban.board' && webviewSection == 'board'",
           "group": "1_board@3"
         }
+      ],
+      "view/title": [
+        {
+          "command": "folderKanban.openBoard",
+          "when": "view == folderKanban.boards",
+          "group": "navigation@1"
+        },
+        {
+          "command": "folderKanban.refreshBoards",
+          "when": "view == folderKanban.boards",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "folderKanban.openBoard",
+          "when": "view == folderKanban.boards && viewItem == board",
+          "group": "inline"
+        }
       ]
     },
     "configuration": {
@@ -245,6 +274,31 @@
       {
         "fileMatch": ".folder-kanban.json",
         "url": "./schemas/folder-kanban.schema.json"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "folderKanban",
+          "title": "Folder Kanban",
+          "icon": "media/activitybar.svg"
+        }
+      ]
+    },
+    "views": {
+      "folderKanban": [
+        {
+          "id": "folderKanban.boards",
+          "name": "%view.boards%",
+          "icon": "media/activitybar.svg",
+          "contextualTitle": "Folder Kanban"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "folderKanban.boards",
+        "contents": "%view.boards.welcome%"
       }
     ]
   },

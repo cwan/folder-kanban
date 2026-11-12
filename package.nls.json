@@ -15,5 +15,8 @@
   "config.newTaskExtension": "Extension added to new task file names that have no extension (e.g. `.md`). Empty to add none.",
   "config.exclude": "Folder / file names that are never shown as task groups or tasks. Names starting with `.` are always hidden.",
   "command.setDue": "Set Due Date...",
-  "command.clearDue": "Clear Due Date"
+  "command.clearDue": "Clear Due Date",
+  "view.boards": "Boards",
+  "command.refreshBoards": "Refresh Boards",
+  "view.boards.welcome": "No workspace folder is open.\n[Open Board](command:folderKanban.openBoard)"
 }

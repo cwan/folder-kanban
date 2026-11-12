@@ -15,5 +15,8 @@
   "config.newTaskExtension": "拡張子なしで作成した新規タスクファイルに付ける拡張子 (例: `.md`)。空にすると付けません。",
   "config.exclude": "タスクグループやタスクとして表示しないフォルダー名・ファイル名。`.` で始まる名前は常に非表示。",
   "command.setDue": "期限を設定...",
-  "command.clearDue": "期限をクリア"
+  "command.clearDue": "期限をクリア",
+  "view.boards": "ボード",
+  "command.refreshBoards": "ボード一覧を更新",
+  "view.boards.welcome": "ワークスペースフォルダーが開かれていません。\n[ボードを開く](command:folderKanban.openBoard)"
 }

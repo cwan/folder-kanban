@@ -43,5 +43,8 @@
   "Current: {0}": "現在: {0}",
   "No due date": "期限なし",
   "YYYY-MM-DD or YYYY-MM-DD HH:mm. Leave empty to clear.": "YYYY-MM-DD または YYYY-MM-DD HH:mm の形式。空にすると期限をクリアします。",
-  "Enter a date as YYYY-MM-DD or YYYY-MM-DD HH:mm.": "YYYY-MM-DD または YYYY-MM-DD HH:mm の形式で入力してください。"
+  "Enter a date as YYYY-MM-DD or YYYY-MM-DD HH:mm.": "YYYY-MM-DD または YYYY-MM-DD HH:mm の形式で入力してください。",
+  "not set up": "未設定",
+  "No {0} yet. It is created when you add task groups.": "{0} はまだありません。タスクグループを追加すると作成されます。",
+  "Open Board": "ボードを開く"
 }

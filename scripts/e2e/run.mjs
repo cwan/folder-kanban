@@ -22,7 +22,7 @@ await esbuild.build({
   alias: { vscode: join(ext, 'scripts/e2e/vscode-mock.ts') },
   logLevel: 'warning',
 });
-const { open, mock } = require(join(work, 'harness.cjs'));
+const { open, mock, BoardsViewProvider } = require(join(work, 'harness.cjs'));
 
 const root = join(work, 'project');
 for (const [dir, files] of Object.entries({
@@ -198,6 +198,28 @@ writeFileSync(
 panel.refresh();
 await card('ToDo', 'c-renamed.md').waitFor();
 await page.screenshot({ path: join(shots, 'board-after.png') });
+
+// 11. Activity bar view lists the workspace root and nested boards.
+mkdirSync(join(root, 'sub/team/Backlog'), { recursive: true });
+writeFileSync(join(root, 'sub/team/.folder-kanban.json'), JSON.stringify({ groups: ['Backlog'] }));
+mkdirSync(join(root, 'node_modules/pkg'), { recursive: true });
+writeFileSync(join(root, 'node_modules/pkg/.folder-kanban.json'), '{}');
+mock.workspace.workspaceFolders = [{ uri: mock.Uri.file(root), name: 'project' }];
+const view = new BoardsViewProvider();
+const items = (await view.getChildren()).map((i) => view.getTreeItem(i));
+assert.deepEqual(
+  items.map((i) => [i.label, i.description ?? '', i.command.command, i.command.arguments[0].fsPath]),
+  [
+    ['project', '', 'folderKanban.openBoard', root],
+    ['team', join('sub', 'team'), 'folderKanban.openBoard', join(root, 'sub/team')],
+  ],
+);
+mock.workspace.workspaceFolders = [{ uri: mock.Uri.file(join(root, 'Doing')), name: 'Doing' }];
+assert.deepEqual(
+  (await view.getChildren()).map((i) => [view.getTreeItem(i).label, view.getTreeItem(i).description]),
+  [['Doing', 'not set up']],
+);
+view.dispose();
 
 console.log(readFileSync(join(root, '.folder-kanban.json'), 'utf8'));
 console.log(mock.log.join('\n'));

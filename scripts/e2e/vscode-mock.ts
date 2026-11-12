@@ -14,6 +14,9 @@ class Emitter<T> {
   fire(e: T) {
     this.listeners.forEach((l) => l(e));
   }
+  dispose() {
+    this.listeners = [];
+  }
 }
 
 export class Uri {
@@ -50,6 +53,22 @@ export enum QuickPickItemKind {
 export class ThemeIcon {
   static Folder = new ThemeIcon('folder');
   constructor(readonly id: string) {}
+}
+export { Emitter as EventEmitter };
+export enum TreeItemCollapsibleState {
+  None = 0,
+}
+export class TreeItem {
+  description?: string;
+  tooltip?: unknown;
+  iconPath?: unknown;
+  resourceUri?: Uri;
+  contextValue?: string;
+  command?: { command: string; arguments?: unknown[] };
+  constructor(readonly label: string, readonly collapsibleState: TreeItemCollapsibleState) {}
+}
+export class MarkdownString {
+  constructor(readonly value: string) {}
 }
 export class RelativePattern {
   constructor(readonly base: Uri, readonly pattern: string) {}
@@ -93,9 +112,27 @@ export class WorkspaceEdit {
 
 export const workspace = {
   fs: fsApi,
-  workspaceFolders: [] as unknown[],
-  getWorkspaceFolder: () => undefined,
-  asRelativePath: (u: Uri) => u.fsPath,
+  workspaceFolders: [] as { uri: Uri; name: string }[],
+  getWorkspaceFolder(u: Uri) {
+    return this.workspaceFolders.find((f) => u.fsPath === f.uri.fsPath || u.fsPath.startsWith(f.uri.fsPath + path.sep));
+  },
+  asRelativePath(u: Uri) {
+    const f = this.getWorkspaceFolder(u);
+    return f ? path.relative(f.uri.fsPath, u.fsPath) || u.fsPath : u.fsPath;
+  },
+  onDidChangeWorkspaceFolders: new Emitter<unknown>().event,
+  async findFiles(glob: string) {
+    const fileName = glob.split('/').pop()!;
+    const found: Uri[] = [];
+    for (const f of this.workspaceFolders) {
+      for (const rel of await fs.readdir(f.uri.fsPath, { recursive: true })) {
+        if (path.basename(rel) === fileName && !rel.split(path.sep).includes('node_modules')) {
+          found.push(Uri.joinPath(f.uri, rel));
+        }
+      }
+    }
+    return found;
+  },
   getConfiguration: () => ({ get: <T>(_k: string, d: T) => d }),
   onDidChangeConfiguration: new Emitter<unknown>().event,
   createFileSystemWatcher: () => ({

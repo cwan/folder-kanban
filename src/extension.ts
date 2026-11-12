@@ -1,12 +1,18 @@
 import * as vscode from 'vscode';
 import { CONFIG_FILE_NAME } from './board';
 import { BoardPanel, VIEW_TYPE } from './boardPanel';
+import { BOARDS_VIEW_ID, BoardsViewProvider } from './boardsView';
 import type { WebviewMenuContext } from './protocol';
 
 const t = vscode.l10n.t;
 
 export function activate(context: vscode.ExtensionContext): void {
+  const boards = new BoardsViewProvider();
   context.subscriptions.push(
+    boards,
+    vscode.window.registerTreeDataProvider(BOARDS_VIEW_ID, boards),
+    vscode.commands.registerCommand('folderKanban.refreshBoards', () => boards.refresh()),
+
     vscode.commands.registerCommand('folderKanban.openBoard', async (uri?: vscode.Uri) => {
       const root = await resolveRoot(uri);
       if (root) {
