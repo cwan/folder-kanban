@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2026-11-12)
 
 - MIT License を適用
 - アクティビティバーに Folder Kanban のアイコンを追加。ワークスペース内のボードを一覧表示し、クリックで開けるようにした
