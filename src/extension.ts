@@ -23,6 +23,8 @@ export function activate(context: vscode.ExtensionContext): void {
     menuCommand('folderKanban.renameGroup', (p, c) => c.group !== undefined && p.renameGroup(c.group)),
     menuCommand('folderKanban.openTask', (p, c) => c.group !== undefined && c.task !== undefined && p.openTask(c.group, c.task)),
     menuCommand('folderKanban.renameTask', (p, c) => c.group !== undefined && c.task !== undefined && p.renameTask(c.group, c.task)),
+    menuCommand('folderKanban.setDue', (p, c) => c.group !== undefined && c.task !== undefined && p.setDue(c.group, c.task)),
+    menuCommand('folderKanban.clearDue', (p, c) => c.group !== undefined && c.task !== undefined && p.clearDue(c.group, c.task)),
     menuCommand('folderKanban.deleteTask', (p, c) => c.group !== undefined && c.task !== undefined && p.deleteTask(c.group, c.task)),
     menuCommand('folderKanban.revealInExplorer', (p, c) => c.group !== undefined && p.revealInExplorer(c.group, c.task)),
 

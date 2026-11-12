@@ -9,6 +9,8 @@ export interface BoardState {
   groups: GroupView[];
   /** Set when the config file cannot be read. */
   error?: string;
+  /** VS Code display language, used to format dates. */
+  locale: string;
   strings: Record<string, string>;
 }
 
@@ -21,6 +23,7 @@ export type FromWebview =
   | { type: 'openTask'; group: string; task: string }
   | { type: 'addTask'; group: string }
   | { type: 'addGroup' }
+  | { type: 'setDue'; group: string; task: string }
   | { type: 'openConfig' };
 
 /** Value of the `data-vscode-context` attribute, passed to `webview/context` menu commands. */
@@ -29,4 +32,6 @@ export interface WebviewMenuContext {
   root: string;
   group?: string;
   task?: string;
+  /** Present on tasks that have a due date (used by the "Clear due date" menu item). */
+  hasDue?: boolean;
 }

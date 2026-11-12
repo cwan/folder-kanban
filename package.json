@@ -52,6 +52,16 @@
         "category": "Folder Kanban"
       },
       {
+        "command": "folderKanban.setDue",
+        "title": "%command.setDue%",
+        "category": "Folder Kanban"
+      },
+      {
+        "command": "folderKanban.clearDue",
+        "title": "%command.clearDue%",
+        "category": "Folder Kanban"
+      },
+      {
         "command": "folderKanban.renameTask",
         "title": "%command.renameTask%",
         "category": "Folder Kanban"
@@ -123,6 +133,14 @@
         {
           "command": "folderKanban.openConfig",
           "when": "false"
+        },
+        {
+          "command": "folderKanban.setDue",
+          "when": "false"
+        },
+        {
+          "command": "folderKanban.clearDue",
+          "when": "false"
         }
       ],
       "explorer/context": [
@@ -144,14 +162,24 @@
           "group": "1_open@2"
         },
         {
+          "command": "folderKanban.setDue",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'task'",
+          "group": "2_meta@1"
+        },
+        {
+          "command": "folderKanban.clearDue",
+          "when": "webviewId == 'folderKanban.board' && webviewSection == 'task' && hasDue",
+          "group": "2_meta@2"
+        },
+        {
           "command": "folderKanban.renameTask",
           "when": "webviewId == 'folderKanban.board' && webviewSection == 'task'",
-          "group": "2_edit@1"
+          "group": "3_edit@1"
         },
         {
           "command": "folderKanban.deleteTask",
           "when": "webviewId == 'folderKanban.board' && webviewSection == 'task'",
-          "group": "2_edit@2"
+          "group": "3_edit@2"
         },
         {
           "command": "folderKanban.addTask",

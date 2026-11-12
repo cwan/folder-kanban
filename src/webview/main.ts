@@ -1,4 +1,4 @@
-import type { Entry, GroupView } from '../board';
+import { dueDeadline, dueHasTime, dueStatus, type Entry, type GroupView, type TaskView } from '../board';
 import type { BoardState, FromWebview, ToWebview, WebviewMenuContext } from '../protocol';
 
 interface VsCodeApi {
@@ -22,6 +22,9 @@ const FILE_ICON =
 const FOLDER_ICON =
   '<svg viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M1.5 3h4.3l1.5 1.5h7.2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-13A.5.5 0 0 1 1 13V3.5a.5.5 0 0 1 .5-.5z"/></svg>';
 
+const CLOCK_ICON =
+  '<svg viewBox="0 0 16 16" width="12" height="12"><path fill="currentColor" d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 1.2a5.8 5.8 0 1 0 0 11.6A5.8 5.8 0 0 0 8 2.2zM8.6 4v3.75l2.6 1.5-.6 1.04L7.4 8.45V4h1.2z"/></svg>';
+
 const DRAG_MIME = 'application/x-folder-kanban';
 
 const placeholder = el('div', 'card-placeholder');
@@ -39,6 +42,13 @@ window.addEventListener('message', (event: MessageEvent<ToWebview>) => {
 });
 
 vscode.postMessage({ type: 'ready' });
+
+// Due badges depend on the current time.
+setInterval(() => {
+  if (!drag) {
+    render();
+  }
+}, 60_000);
 
 // -----------------------------------------------------------------------------------------------
 // Rendering
@@ -132,21 +142,26 @@ function renderGroup(group: GroupView): HTMLElement {
   return col;
 }
 
-function renderTask(group: string, task: Entry): HTMLElement {
+function renderTask(group: string, task: TaskView): HTMLElement {
   const card = el('div', task.isDir ? 'card folder' : 'card');
   card.dataset.task = task.name;
   card.draggable = true;
   card.tabIndex = 0;
   card.title = `${group}/${task.name}`;
-  setContext(card, { webviewSection: 'task', root: state!.root, group, task: task.name });
+  setContext(card, { webviewSection: 'task', root: state!.root, group, task: task.name, ...(task.due ? { hasDue: true } : {}) });
 
   const { stem, ext } = splitName(task);
+  const main = el('div', 'card-main');
   const icon = el('span', 'card-icon');
   icon.setAttribute('aria-hidden', 'true');
   icon.innerHTML = task.isDir ? FOLDER_ICON : FILE_ICON;
-  card.append(icon, el('span', 'card-title', stem));
+  main.append(icon, el('span', 'card-title', stem));
   if (ext) {
-    card.append(el('span', 'card-ext', ext));
+    main.append(el('span', 'card-ext', ext));
+  }
+  card.append(main);
+  if (task.due) {
+    card.append(renderDue(group, task.name, task.due));
   }
   if (task.isDir) {
     card.setAttribute('aria-label', `${s('folder')}: ${task.name}`);
@@ -169,6 +184,42 @@ function renderTask(group: string, task: Entry): HTMLElement {
   });
   card.addEventListener('dragend', endDrag);
   return card;
+}
+
+function renderDue(group: string, task: string, due: string): HTMLElement {
+  const status = dueStatus(due, new Date());
+  const badge = el('button', `due due-${status}`);
+  badge.type = 'button';
+  badge.draggable = false;
+  const icon = el('span', 'due-icon');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.innerHTML = CLOCK_ICON;
+  badge.append(icon, el('span', 'due-text', formatDue(due)));
+  badge.title = `${status === 'overdue' ? s('overdue') : s('due')}: ${due.replace('T', ' ')} (${s('setDue')})`;
+  badge.addEventListener('click', (e) => {
+    e.stopPropagation();
+    vscode.postMessage({ type: 'setDue', group, task });
+  });
+  badge.addEventListener('keydown', (e) => e.stopPropagation());
+  return badge;
+}
+
+function formatDue(due: string): string {
+  const date = dueHasTime(due) ? dueDeadline(due) : new Date(`${due}T00:00`);
+  const sameYear = date.getFullYear() === new Date().getFullYear();
+  const options: Intl.DateTimeFormatOptions = { month: 'numeric', day: 'numeric', weekday: 'short' };
+  if (!sameYear) {
+    options.year = 'numeric';
+  }
+  if (dueHasTime(due)) {
+    options.hour = '2-digit';
+    options.minute = '2-digit';
+  }
+  try {
+    return new Intl.DateTimeFormat(state?.locale, options).format(date);
+  } catch {
+    return due.replace('T', ' ');
+  }
 }
 
 function splitName(task: Entry): { stem: string; ext: string } {

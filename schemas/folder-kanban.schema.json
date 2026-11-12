@@ -24,11 +24,33 @@
               },
               "tasks": {
                 "type": "array",
-                "description": "Task (file / folder) names in display order. Unlisted entries are shown at the end.",
+                "description": "Tasks (file / folder names) in display order, with their meta data. Unlisted entries are shown at the end.",
                 "items": {
-                  "type": "string"
-                },
-                "uniqueItems": true
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "Task name (file or folder name)."
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "name"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Task name (file or folder name)."
+                        },
+                        "due": {
+                          "type": "string",
+                          "description": "Due date: \"YYYY-MM-DD\" or \"YYYY-MM-DDTHH:mm\" (local time).",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2})?$"
+                        }
+                      }
+                    }
+                  ]
+                }
               }
             },
             "additionalProperties": false

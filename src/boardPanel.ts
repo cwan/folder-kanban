@@ -17,6 +17,9 @@ import {
   parseConfig,
   removeGroup,
   removeTask,
+  formatDue,
+  parseDue,
+  setDue,
   renameGroup,
   renameTask,
   serializeConfig,
@@ -37,6 +40,9 @@ function webviewStrings(): Record<string, string> {
     folder: t('Folder'),
     configError: t('Failed to read {0}', CONFIG_FILE_NAME),
     openConfig: t('Open config file'),
+    due: t('Due'),
+    overdue: t('Overdue'),
+    setDue: t('Set due date'),
   };
 }
 
@@ -168,6 +174,9 @@ export class BoardPanel {
         break;
       case 'openConfig':
         this.openConfig();
+        break;
+      case 'setDue':
+        this.setDue(m.group, m.task);
         break;
     }
   }
@@ -344,6 +353,54 @@ export class BoardPanel {
     });
   }
 
+  setDue(group: string, task: string): void {
+    this.run(async () => {
+      const snap = await this.snapshot();
+      const config = normalize(snap.config, snap.scan);
+      const current = config.groups.find((g) => g.folder === group)?.tasks.find((x) => x.name === task)?.due;
+      const today = new Date();
+      const days = (n: number) => formatDue(new Date(today.getFullYear(), today.getMonth(), today.getDate() + n), false);
+      type Item = vscode.QuickPickItem & { due?: string; action?: 'input' | 'clear' };
+      const items: Item[] = [
+        { label: `$(calendar) ${t('Today')}`, description: days(0), due: days(0) },
+        { label: `$(calendar) ${t('Tomorrow')}`, description: days(1), due: days(1) },
+        { label: `$(calendar) ${t('In a week')}`, description: days(7), due: days(7) },
+        { label: `$(edit) ${t('Enter date and time...')}`, action: 'input' },
+      ];
+      if (current) {
+        items.push({ label: '', kind: vscode.QuickPickItemKind.Separator }, { label: `$(close) ${t('Clear due date')}`, action: 'clear' });
+      }
+      const picked = await vscode.window.showQuickPick(items, {
+        title: t('Due date of "{0}"', task),
+        placeHolder: current ? t('Current: {0}', current.replace('T', ' ')) : t('No due date'),
+      });
+      if (!picked) {
+        return;
+      }
+      let due: string | undefined = picked.due;
+      if (picked.action === 'input') {
+        const input = await vscode.window.showInputBox({
+          title: t('Due date of "{0}"', task),
+          prompt: t('YYYY-MM-DD or YYYY-MM-DD HH:mm. Leave empty to clear.'),
+          value: (current ?? days(0)).replace('T', ' '),
+          validateInput: (v) => (v.trim() === '' || parseDue(v) ? undefined : t('Enter a date as YYYY-MM-DD or YYYY-MM-DD HH:mm.')),
+        });
+        if (input === undefined) {
+          return;
+        }
+        due = input.trim() === '' ? undefined : parseDue(input);
+      }
+      await this.writeConfig(setDue(config, group, task, due));
+    });
+  }
+
+  clearDue(group: string, task: string): void {
+    this.run(async () => {
+      const snap = await this.snapshot();
+      await this.writeConfig(setDue(normalize(snap.config, snap.scan), group, task, undefined));
+    });
+  }
+
   // ---------------------------------------------------------------------------------------------
   // Drag & drop
 
@@ -402,6 +459,7 @@ export class BoardPanel {
       root: this.root.toString(),
       rootName: titleFor(this.root),
       groups: [],
+      locale: vscode.env.language,
       strings: webviewStrings(),
     };
     try {

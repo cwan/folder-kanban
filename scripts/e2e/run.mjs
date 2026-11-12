@@ -39,7 +39,12 @@ for (const [dir, files] of Object.entries({
 }
 writeFileSync(join(root, '.folder-kanban.json'), JSON.stringify({ groups: ['ToDo', 'Doing', 'Done'] }));
 const config = () => JSON.parse(readFileSync(join(root, '.folder-kanban.json'), 'utf8'));
-const tasksOf = (g) => config().groups.find((x) => x.folder === g).tasks;
+const taskObjs = (g) => config().groups.find((x) => x.folder === g).tasks;
+const tasksOf = (g) => taskObjs(g).map((t) => t.name);
+const dueOf = (g, t) => taskObjs(g).find((x) => x.name === t)?.due;
+const pad = (n) => String(n).padStart(2, '0');
+const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const daysFromNow = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); };
 
 const { chromium } = require('playwright');
 const browser = await chromium.launch();
@@ -125,23 +130,71 @@ await card('Doing', 'a.md').click();
 await settle();
 assert.ok(mock.log.some((l) => l === `vscode.open ${join(root, 'Doing/a.md')}`));
 
+// 8b. Due dates: set via "Enter date and time...", shown as an overdue badge.
+mock.answers.quickPick.push({ action: 'input' });
+mock.answers.input.push('2020/1/2 9:05');
+panel.setDue('Doing', 'a.md');
+await settle();
+assert.equal(dueOf('Doing', 'a.md'), '2020-01-02T09:05');
+const badge = card('Doing', 'a.md').locator('.due');
+assert.equal(await badge.getAttribute('class'), 'due due-overdue');
+
+// Invalid input is rejected and nothing changes.
+mock.answers.quickPick.push({ action: 'input' });
+mock.answers.input.push('next friday');
+panel.setDue('Doing', 'a.md');
+await settle();
+assert.equal(dueOf('Doing', 'a.md'), '2020-01-02T09:05');
+assert.ok(mock.log.some((l) => l.startsWith('invalid: Enter a date')));
+
+// Clicking the badge opens the picker (and does not open the file); "Today" makes it "soon".
+const opened = mock.log.length;
+mock.answers.quickPick.push({ due: daysFromNow(0) });
+await badge.click();
+await settle();
+assert.equal(dueOf('Doing', 'a.md'), daysFromNow(0));
+assert.ok(!mock.log.slice(opened).some((l) => l.startsWith('vscode.open')));
+assert.equal(await card('Doing', 'a.md').locator('.due').getAttribute('class'), 'due due-soon');
+
+// The due date follows the task when it is dragged to another group.
+await card('Doing', 'a.md').dragTo(card('ToDo', 'c.md'), { targetPosition: { x: 20, y: 3 } });
+await settle();
+assert.ok(existsSync(join(root, 'ToDo/a.md')));
+assert.equal(dueOf('ToDo', 'a.md'), daysFromNow(0));
+assert.equal(await card('ToDo', 'a.md').locator('.due').getAttribute('class'), 'due due-soon');
+
+// Clear.
+panel.clearDue('ToDo', 'a.md');
+await settle();
+assert.equal(dueOf('ToDo', 'a.md'), undefined);
+assert.equal(await card('ToDo', 'a.md').locator('.due').count(), 0);
+
 // 9. Rename and delete via the (context menu) operations.
 mock.answers.input.push('c-renamed.md');
 panel.renameTask('ToDo', 'c.md');
 await settle();
-assert.deepEqual(tasksOf('ToDo'), ['c-renamed.md', 'b.md']);
+assert.deepEqual(tasksOf('ToDo'), ['a.md', 'c-renamed.md', 'b.md']);
 mock.answers.warning.push('Move to Trash');
 panel.deleteTask('ToDo', 'b.md');
 await settle();
 assert.ok(!existsSync(join(root, 'ToDo/b.md')));
-assert.deepEqual(await order('ToDo'), ['c-renamed.md']);
+assert.deepEqual(await order('ToDo'), ['a.md', 'c-renamed.md']);
 
 // 10. Broken config shows an error instead of the board.
 writeFileSync(join(root, '.folder-kanban.json'), '{ broken');
 panel.refresh();
 await page.locator('.error').waitFor();
 
-writeFileSync(join(root, '.folder-kanban.json'), JSON.stringify({ groups: ['ToDo', 'Doing', 'Done'] }));
+writeFileSync(
+  join(root, '.folder-kanban.json'),
+  JSON.stringify({
+    groups: [
+      { folder: 'ToDo', tasks: [{ name: 'a.md', due: daysFromNow(10) }, { name: 'c-renamed.md', due: `${daysFromNow(0)}T18:00` }] },
+      'Doing',
+      { folder: 'Done', tasks: [{ name: 'b.md' }, { name: 'Design spec', due: daysFromNow(-3) }] },
+    ],
+  }),
+);
 panel.refresh();
 await card('ToDo', 'c-renamed.md').waitFor();
 await page.screenshot({ path: join(shots, 'board-after.png') });

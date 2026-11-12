@@ -13,5 +13,7 @@
   "command.openConfig": "Open Board Config File",
   "config.boardRoot": "Folder (relative to the workspace folder) used as the board root by **Folder Kanban: Open Board**. Empty means the workspace folder itself.",
   "config.newTaskExtension": "Extension added to new task file names that have no extension (e.g. `.md`). Empty to add none.",
-  "config.exclude": "Folder / file names that are never shown as task groups or tasks. Names starting with `.` are always hidden."
+  "config.exclude": "Folder / file names that are never shown as task groups or tasks. Names starting with `.` are always hidden.",
+  "command.setDue": "Set Due Date...",
+  "command.clearDue": "Clear Due Date"
 }

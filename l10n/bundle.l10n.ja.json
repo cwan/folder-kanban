@@ -30,5 +30,18 @@
   "Name must not be empty.": "名前を入力してください。",
   "Name must not be \".\" or \"..\".": "「.」「..」は使用できません。",
   "Name must not end with a dot or a space.": "名前の末尾にドットやスペースは使用できません。",
-  "Name must not contain any of < > : \" / \\ | ? *": "名前に < > : \" / \\ | ? * は使用できません。"
+  "Name must not contain any of < > : \" / \\ | ? *": "名前に < > : \" / \\ | ? * は使用できません。",
+  "Due": "期限",
+  "Overdue": "期限切れ",
+  "Set due date": "期限を設定",
+  "Today": "今日",
+  "Tomorrow": "明日",
+  "In a week": "1週間後",
+  "Enter date and time...": "日時を入力...",
+  "Clear due date": "期限をクリア",
+  "Due date of \"{0}\"": "「{0}」の期限",
+  "Current: {0}": "現在: {0}",
+  "No due date": "期限なし",
+  "YYYY-MM-DD or YYYY-MM-DD HH:mm. Leave empty to clear.": "YYYY-MM-DD または YYYY-MM-DD HH:mm の形式。空にすると期限をクリアします。",
+  "Enter a date as YYYY-MM-DD or YYYY-MM-DD HH:mm.": "YYYY-MM-DD または YYYY-MM-DD HH:mm の形式で入力してください。"
 }
