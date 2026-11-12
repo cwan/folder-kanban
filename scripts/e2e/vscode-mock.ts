@@ -153,7 +153,17 @@ export const workspace = {
 export let hostToWebview: (m: unknown) => void = () => undefined;
 export const webviewToHost = new Emitter<unknown>();
 
+export const treeView = { visible: false, visibility: new Emitter<{ visible: boolean }>() };
+
 export const window = {
+  createTreeView: () => ({
+    get visible() {
+      return treeView.visible;
+    },
+    onDidChangeVisibility: treeView.visibility.event,
+    dispose() {},
+  }),
+  registerWebviewPanelSerializer: () => ({ dispose() {} }),
   createWebviewPanel: () => {
     const dispose = new Emitter<void>();
     return {
@@ -188,8 +198,20 @@ export const window = {
   showTextDocument: async (u: Uri) => log.push(`show ${u.fsPath}`),
 };
 
+const registered = new Map<string, (...args: unknown[]) => unknown>();
 export const commands = {
-  executeCommand: async (id: string, u: Uri) => log.push(`${id} ${u.fsPath}`),
+  registerCommand(id: string, fn: (...args: unknown[]) => unknown) {
+    registered.set(id, fn);
+    return { dispose: () => registered.delete(id) };
+  },
+  async executeCommand(id: string, ...args: unknown[]) {
+    const fn = registered.get(id);
+    if (fn) {
+      log.push(`command ${id}`);
+      return fn(...args);
+    }
+    log.push(`${id} ${(args[0] as Uri | undefined)?.fsPath ?? ''}`.trim());
+  },
 };
 
 export const env = { language: 'en' };

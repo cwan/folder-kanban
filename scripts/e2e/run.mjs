@@ -22,7 +22,7 @@ await esbuild.build({
   alias: { vscode: join(ext, 'scripts/e2e/vscode-mock.ts') },
   logLevel: 'warning',
 });
-const { open, mock, BoardsViewProvider } = require(join(work, 'harness.cjs'));
+const { open, mock, BoardsViewProvider, activate } = require(join(work, 'harness.cjs'));
 
 const root = join(work, 'project');
 for (const [dir, files] of Object.entries({
@@ -220,6 +220,32 @@ assert.deepEqual(
   [['Doing', 'not set up']],
 );
 view.dispose();
+
+// 12. Clicking the activity bar icon runs "Open Board".
+{
+  const opens = () => mock.log.filter((l) => l === 'command folderKanban.openBoard').length;
+  const ctx = { extensionUri: mock.Uri.file(ext), subscriptions: [] };
+  // First click: the extension is activated with the view already visible.
+  mock.workspace.workspaceFolders = [{ uri: mock.Uri.file(root), name: 'project' }];
+  mock.treeView.visible = true;
+  activate(ctx);
+  await settle();
+  assert.equal(opens(), 1);
+  // The visibility event for the same click must not open it twice.
+  mock.treeView.visibility.fire({ visible: true });
+  assert.equal(opens(), 1);
+  // Hiding does nothing; showing again later opens (reveals) the board again.
+  await page.waitForTimeout(1100);
+  mock.treeView.visibility.fire({ visible: false });
+  assert.equal(opens(), 1);
+  mock.treeView.visibility.fire({ visible: true });
+  assert.equal(opens(), 2);
+  // No workspace folder: nothing is opened (the welcome view offers a button instead).
+  await page.waitForTimeout(1100);
+  mock.workspace.workspaceFolders = [];
+  mock.treeView.visibility.fire({ visible: true });
+  assert.equal(opens(), 2);
+}
 
 console.log(readFileSync(join(root, '.folder-kanban.json'), 'utf8'));
 console.log(mock.log.join('\n'));

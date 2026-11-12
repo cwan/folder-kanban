@@ -7,3 +7,4 @@ export function open(extensionPath: string, root: string) {
   const ctx = { extensionUri: vscode.Uri.file(extensionPath), subscriptions: [] } as unknown as vscode.ExtensionContext;
   return BoardPanel.show(ctx, vscode.Uri.file(root));
 }
+export { activate } from '../../src/extension';

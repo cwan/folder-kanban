@@ -18,5 +18,6 @@
   "command.clearDue": "Clear Due Date",
   "view.boards": "Boards",
   "command.refreshBoards": "Refresh Boards",
-  "view.boards.welcome": "No workspace folder is open.\n[Open Board](command:folderKanban.openBoard)"
+  "view.boards.welcome": "No workspace folder is open.\n[Open Board](command:folderKanban.openBoard)",
+  "config.openBoardFromActivityBar": "Run **Open Board** when the Folder Kanban icon in the activity bar is clicked (when the boards view is shown)."
 }

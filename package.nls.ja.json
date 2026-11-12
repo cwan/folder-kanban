@@ -18,5 +18,6 @@
   "command.clearDue": "期限をクリア",
   "view.boards": "ボード",
   "command.refreshBoards": "ボード一覧を更新",
-  "view.boards.welcome": "ワークスペースフォルダーが開かれていません。\n[ボードを開く](command:folderKanban.openBoard)"
+  "view.boards.welcome": "ワークスペースフォルダーが開かれていません。\n[ボードを開く](command:folderKanban.openBoard)",
+  "config.openBoardFromActivityBar": "アクティビティバーの Folder Kanban アイコンをクリックしたとき (ボード一覧が表示されたとき) に **ボードを開く** を実行します。"
 }

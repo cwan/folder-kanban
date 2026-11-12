@@ -8,9 +8,22 @@ const t = vscode.l10n.t;
 
 export function activate(context: vscode.ExtensionContext): void {
   const boards = new BoardsViewProvider();
+  const boardsView = vscode.window.createTreeView(BOARDS_VIEW_ID, { treeDataProvider: boards });
+  let lastAutoOpen = 0;
+  const openFromActivityBar = () => {
+    const enabled = vscode.workspace.getConfiguration('folderKanban').get<boolean>('openBoardFromActivityBar', true);
+    // The visibility event and the initial check below may both fire for one click.
+    if (!enabled || (vscode.workspace.workspaceFolders?.length ?? 0) === 0 || Date.now() - lastAutoOpen < 1000) {
+      return;
+    }
+    lastAutoOpen = Date.now();
+    void vscode.commands.executeCommand('folderKanban.openBoard');
+  };
   context.subscriptions.push(
     boards,
-    vscode.window.registerTreeDataProvider(BOARDS_VIEW_ID, boards),
+    boardsView,
+    // The activity bar cannot run a command directly, so open the board when the view gets shown.
+    boardsView.onDidChangeVisibility((e) => e.visible && openFromActivityBar()),
     vscode.commands.registerCommand('folderKanban.refreshBoards', () => boards.refresh()),
 
     vscode.commands.registerCommand('folderKanban.openBoard', async (uri?: vscode.Uri) => {
@@ -45,6 +58,12 @@ export function activate(context: vscode.ExtensionContext): void {
       },
     }),
   );
+
+  // The first click on the icon activates the extension with the view already visible.
+  // Checked after all commands are registered.
+  if (boardsView.visible) {
+    openFromActivityBar();
+  }
 }
 
 export function deactivate(): void {}

@@ -267,6 +267,12 @@
           ],
           "scope": "resource",
           "markdownDescription": "%config.exclude%"
+        },
+        "folderKanban.openBoardFromActivityBar": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "markdownDescription": "%config.openBoardFromActivityBar%"
         }
       }
     },
