@@ -73,7 +73,7 @@ project/                  ← ボードのルート
 
 ## インストール
 
-1. リポジトリの **Releases** から `folder-kanban-x.y.z.vsix` をダウンロードします。
+1. [Releases](https://github.com/cwan/folder-kanban/releases) から `folder-kanban-x.y.z.vsix` をダウンロードします。
 2. VS Code の拡張機能ビューの `...` メニュー → **VSIX からのインストール...** で選択するか、次のコマンドを実行します。
 
    ```bash
@@ -100,3 +100,7 @@ VS Code でこのフォルダーを開いて F5 を押すと、拡張機能を�
    - GitHub の **Actions** タブ → **Release** → **Run workflow** (タグ `v0.2.0` は自動で作成されます)
    - またはバージョンと同じタグを push: `git tag v0.2.0 && git push origin v0.2.0`
 3. GitHub Actions (`.github/workflows/release.yml`) がビルドし、Release に `.vsix` を添付します。`v0.2.0-beta.1` のように `-` を含むバージョンはプレリリースになります。
+
+## ライセンス
+
+[MIT License](LICENSE)

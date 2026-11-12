@@ -5,7 +5,15 @@
   "version": "0.1.0",
   "publisher": "local",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cwan/folder-kanban.git"
+  },
+  "homepage": "https://github.com/cwan/folder-kanban#readme",
+  "bugs": {
+    "url": "https://github.com/cwan/folder-kanban/issues"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -313,7 +321,7 @@
     "watch": "node scripts/build.mjs --watch",
     "typecheck": "tsc -p . --noEmit",
     "test": "node scripts/build.mjs --tests && node --test out/test/*.test.js",
-    "package": "node -e \"require('fs').mkdirSync('dist-vsix',{recursive:true})\" && vsce package --no-dependencies --skip-license --allow-missing-repository --no-rewrite-relative-links --out dist-vsix/",
+    "package": "node -e \"require('fs').mkdirSync('dist-vsix',{recursive:true})\" && vsce package --no-dependencies --out dist-vsix/",
     "vscode:prepublish": "npm run build -- --production",
     "e2e": "npm run build && node scripts/e2e/run.mjs"
   },
